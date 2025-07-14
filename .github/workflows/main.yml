@@ -1,105 +1,93 @@
-name: Generate Dynamic README
+name: 🌸 动态README更新工作流 🌸
 
 on:
   schedule:
-    # 每天 UTC 时间 00:00 运行
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        
-    - name: Install dependencies
-      run: |
-        npm init -y
-        npm install axios moment
-        
-    - name: Create generate script
-      run: |
-        cat > generate-readme.js << 'EOF'
-        const fs = require('fs');
-        const axios = require('axios');
-        const moment = require('moment');
-        
-        async function generateReadme() {
-          const now = moment();
-          const username = process.env.GITHUB_REPOSITORY.split('/')[0];
-          
-          let userInfo = {};
-          try {
-            const response = await axios.get('https://api.github.com/users/' + username);
-            userInfo = response.data;
-          } catch (error) {
-            console.log('无法获取用户信息:', error.message);
-          }
-          
-          let recentRepos = [];
-          try {
-            const response = await axios.get('https://api.github.com/users/' + username + '/repos?sort=updated&per_page=5');
-            recentRepos = response.data;
-          } catch (error) {
-            console.log('无法获取仓库信息:', error.message);
-          }
-          
-          const repoList = recentRepos.map(repo => 
-            '- [' + repo.name + '](' + repo.html_url + ') - ' + (repo.description || '暂无描述')
-          ).join('\n');
-          
-          const readme = '# Hi there! 👋\n\n' +
-            '## 关于我\n\n' +
-            '**' + (userInfo.name || username) + '**\n' +
-            (userInfo.bio || '热爱编程的开发者') + '\n\n' +
-            '- 🌍 位置: ' + (userInfo.location || '地球') + '\n' +
-            '- 🏢 公司: ' + (userInfo.company || '自由职业') + '\n' +
-            '- 📧 邮箱: ' + (userInfo.email || '暂未公开') + '\n' +
-            '- 📱 GitHub: [@' + username + '](https://github.com/' + username + ')\n' +
-            '- 💼 公开仓库: ' + (userInfo.public_repos || 0) + ' 个\n' +
-            '- 👥 关注者: ' + (userInfo.followers || 0) + ' 人\n\n' +
-            '## 📊 统计信息\n\n' +
-            '![GitHub Stats](https://github-readme-stats.vercel.app/api?username=' + username + '&show_icons=true&theme=radical)\n\n' +
-            '## 🚀 最近更新的项目\n\n' +
-            repoList + '\n\n' +
-            '## 🛠️ 技术栈\n\n' +
-            '![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)\n' +
-            '![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)\n' +
-            '![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat-square&logo=node.js&logoColor=white)\n' +
-            '![React](https://img.shields.io/badge/-React-61DAFB?style=flat-square&logo=react&logoColor=black)\n' +
-            '![Git](https://img.shields.io/badge/-Git-F05032?style=flat-square&logo=git&logoColor=white)\n\n' +
-            '## 📈 语言使用统计\n\n' +
-            '![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=' + username + '&layout=compact&theme=radical)\n\n' +
-            '## 🌟 \n\n' +
-            '> "路很长，梦还在"\n\n' +
-            '---\n\n' +
-            '⏰ **最后更新**: ' + now.format('YYYY-MM-DD HH:mm:ss') + ' UTC\n\n' +
-            '🤖 **自动生成**: 本 README 通过 GitHub Actions 自动更新\n\n' +
-            '[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/' + process.env.GITHUB_REPOSITORY + '/readme.yml?branch=main)](https://github.com/' + process.env.GITHUB_REPOSITORY + '/actions)\n';
-          
-          fs.writeFileSync('README.md', readme);
-          console.log('README.md 生成成功!');
-        }
-        
-        generateReadme().catch(console.error);
-        EOF
-        
-    - name: Run generate script
-      run: node generate-readme.js
-        
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "IGCrystal@wenturc.com"
-        git config --local user.name "IGCrystal"
-        git add README.md
-        git diff --staged --quiet || git commit -m "🤖 自动更新 README - $(date +'%Y-%m-%d %H:%M:%S')"
-        git push
+      - name: 🔄 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐍 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 📦 安装依赖
+        run: |
+          pip install requests pytz
+
+      - name: ✨ 生成动态 README
+        run: |
+          python << 'EOF'
+          import requests
+          import random
+          import datetime
+          import pytz
+          import json
+
+          tz = pytz.timezone('Asia/Shanghai')
+          now = datetime.datetime.now(tz)
+
+          def get_weather():
+              try:
+                  url = "http://wthrcdn.etouch.cn/weather_mini?city=重庆"
+                  r = requests.get(url, timeout=10)
+                  if r.status_code == 200:
+                      d = r.json()
+                      if d.get('status') == 1000:
+                          f = d['data']['forecast'][0]
+                          return f"🌤️ {f['type']} | 🌡️ {f['low']} ~ {f['high']}"
+                  return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+              except Exception as e:
+                  print(f"天气获取异常: {e}")
+                  return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+
+          def get_fortune():
+              items = [
+                  "🎉 大吉！今天是充满奇迹的一天！",
+                  "✨ 中吉！好事即将发生~",
+                  "🌟 小吉！保持微笑，幸运会眷顾你",
+                  "💫 吉！今天适合学习新技能",
+                  "🍀 末吉！平稳度过，小心谨慎",
+                  "🌸 平！保持平常心，一切都会好的",
+              ]
+              return random.choice(items)
+
+          weather = get_weather()
+          fortune = get_fortune()
+          ending = random.choice([
+              "今天也要元气满满地coding哦！",
+              "愿你的代码永远没有bug~",
+              "记得多喝水，多休息~",
+          ])
+
+          content = f"""# 自动更新 README
+
+  更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
+
+  **今日天气：** {weather}
+  **今日运势：** {fortune}
+  **寄语：** {ending}
+  """
+          with open('README.md', 'w', encoding='utf-8') as f:
+              f.write(content)
+          print("✅ README.md 更新完成！")
+          EOF
+
+      - name: 📝 提交更改
+        run: |
+          git config user.email "IGCrystal@wenturc.com"
+          git config user.name "IGCrystal"
+          git add README.md
+          if ! git diff --cached --quiet; then
+            git commit -m "🌸 自动更新 README - $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
