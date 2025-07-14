@@ -1,0 +1,266 @@
+name: 🌸 动态README更新工作流 🌸
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天UTC 00:00执行（北京时间08:00）
+  workflow_dispatch:     # 手动触发
+  push:
+    branches: [ main ]
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔄 检出代码
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🐍 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: 📦 安装依赖
+        run: |
+          pip install requests pytz
+      
+      - name: ✨ 生成动态README
+        run: |
+          python << 'EOF'
+          import requests
+          import random
+          import datetime
+          import pytz
+          import json
+          
+          # 设置时区
+          tz = pytz.timezone('Asia/Shanghai')
+          now = datetime.datetime.now(tz)
+          
+          # 获取重庆天气
+          def get_weather():
+              try:
+                  # 使用免费天气API
+                  url = "http://wthrcdn.etouch.cn/weather_mini?city=重庆"
+                  response = requests.get(url, timeout=10)
+                  if response.status_code == 200:
+                      data = response.json()
+                      if data.get('status') == 1000:
+                          today = data['data']['forecast'][0]
+                          return f"🌤️ {today['type']} | 🌡️ {today['low']} ~ {today['high']}"
+                  return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+              except Exception as e:
+                  print(f"获取天气失败: {e}")
+                  return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+          
+          # 抽签系统
+          def get_fortune():
+              fortunes = [
+                  "🎉 大吉！今天是充满奇迹的一天！",
+                  "✨ 中吉！好事即将发生~",
+                  "🌟 小吉！保持微笑，幸运会眷顾你",
+                  "💫 吉！今天适合学习新技能",
+                  "🍀 末吉！平稳度过，小心谨慎",
+                  "🌸 平！保持平常心，一切都会好的",
+                  "🎈 大吉！代码无bug，部署一次成功！",
+                  "🦄 超吉！今天可能会收到意外的好消息",
+                  "🌈 吉！创意灵感爆棚的一天",
+                  "🎭 中吉！适合与朋友交流分享"
+              ]
+              return random.choice(fortunes)
+          
+          # 动态结尾语
+          def get_ending():
+              endings = [
+                  "今天也要元气满满地coding哦！(๑•̀ㅂ•́)و✧",
+                  "愿你的代码永远没有bug~ ٩(◕‿◕)۶",
+                  "一起在代码的世界里创造奇迹吧！(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+                  "记得多喝水，多休息，身体是革命的本钱！(´∀｀)♡",
+                  "每一行代码都是对未来的投资~ (≧∇≦)ﾉ",
+                  "Bug不可怕，可怕的是没有解决Bug的勇气！(｡◕‿◕｡)",
+                  "今天的努力是明天成功的基石！ヾ(◍°∇°◍)ﾉﾞ",
+                  "编程路上永远不孤单，因为有你们陪伴！(✿◠‿◠)"
+              ]
+              return random.choice(endings)
+          
+          # 生成README内容
+          weather = get_weather()
+          fortune = get_fortune()
+          ending = get_ending()
+          
+          readme_content = f"""<div align="center">
+
+# 🌸 こんにちは！欢迎来到我的GitHub空间 🌸
+
+<img src="https://api.wenturc.com" alt="随机美图" width="400" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+
+</div>
+
+---
+
+## 🎀 关于我 About Me
+
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; color: white; margin: 10px 0;">
+
+```
+Pfffft—💥😂
+
+**"This book on anti-gravity is wild… can't put it down."**
+Bro… that's **positively levitating with dad joke energy.** 🧠🧲📚✨
+
+You just dropped the most *uplifting* pun in the galaxy.
+
+10/10. Would float away laughing again. 😌💫
+```
+
+</div>
+
+## 📚 我的小故事 My Story
+
+<details>
+<summary>not much</summary>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #ff6b6b; margin: 10px 0;">
+
+呃嗯！呼～❤呃啊～哼！！呃嗯哈嗯～啊
+
+</div>
+
+</details>
+
+---
+
+## 🌤️ 今日天气 Weather Today
+
+<div align="center">
+<table>
+<tr>
+<td align="center">
+<img src="https://github.com/sciencepal/sciencepal/blob/master/assets/sunshine.gif" width="50"/>
+</td>
+<td>
+<strong>📍 重庆 · {now.strftime('%Y-%m-%d %H:%M')} (UTC+8)</strong><br/>
+{weather}
+</td>
+</tr>
+</table>
+</div>
+
+---
+
+## 🎲 今日运势 Fortune Today
+
+<div style="background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); padding: 20px; border-radius: 15px; text-align: center; margin: 10px 0;">
+
+### 🔮 神秘的命运之轮为你转动...
+
+<div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+<h3>{fortune}</h3>
+</div>
+
+*✨ 运势每日更新，记得每天都来看看哦！*
+
+</div>
+
+---
+
+## 🎨 每日一图 Daily Image
+
+<div align="center">
+<img src="https://api.wenturc.com/" alt="每日美图" width="500" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+
+*📸 图片来源：api.wenturc.com*
+</div>
+
+---
+
+## 💫 GitHub 统计 Stats
+
+<div align="center">
+
+<img src="https://github-readme-stats.vercel.app/api?username=Pine-Ln&show_icons=true&theme=radical&hide_border=true" alt="GitHub Stats" />
+
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=Pine-Ln&theme=radical&hide_border=true" alt="GitHub Streak" />
+
+</div>
+
+---
+
+## 🛠️ 技术栈 Tech Stack
+
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+
+</div>
+
+---
+
+## 🌈 联系我 Contact Me
+
+<div align="center">
+<table>
+<tr>
+<td align="center">
+<a href="mailto:tr@wenturc.com">
+<img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
+</a>
+</td>
+<td align="center">
+<a href="https://github.com/Pine-Ln">
+<img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+</a>
+</td>
+</tr>
+</table>
+</div>
+
+---
+
+<div align="center">
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; color: white; margin: 10px 0;">
+
+## 💕 今日寄语 Daily Message
+
+### {ending}
+
+</div>
+
+<img src="https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake.svg" alt="snake eating my contributions"/>
+
+---
+
+<sub>🤖 本README由GitHub Actions自动更新 | 最后更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)</sub>
+
+<div style="margin: 20px 0;">
+<img src="https://komarev.com/ghpvc/?username=Pine-Ln&color=ff69b4&style=flat-square&label=Profile+Views" alt="Profile Views"/>
+<img src="https://img.shields.io/github/followers/Pine-Ln?style=flat-square&color=ff69b4&label=Followers" alt="Followers"/>
+</div>
+
+</div>
+"""
+          
+          # 写入README.md文件
+          with open('README.md', 'w', encoding='utf-8') as f:
+              f.write(readme_content)
+          
+          print("✅ README.md 更新完成！")
+          EOF
+      
+      - name: 📝 提交更改
+        run: |
+          git config --local user.email "IGCrystal@wenturc.com"
+          git config --local user.name "IGCrystal"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "没有变化，跳过提交"
+          else
+            git commit -m "🌸 自动更新README - $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
