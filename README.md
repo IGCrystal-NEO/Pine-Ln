@@ -10,19 +10,19 @@
 
 | 项目 | 内容 |
 |------|------|
-| 📅 更新时间 | 2025-07-14 19:44:19 (UTC+8) |
-| 🌤️ 今日天气 | 🌤️ Patchy rain nearby | 🌡️ 35°C |
-| 🔮 今日运势 | 🔥 超吉！今天的你就是最亮的星！ |
-| 💬 编程名言 | Java is to JavaScript what car is to Carpet. - Chris Heilmann |
+| 📅 更新时间 | 2025-07-14 21:13:45 (UTC+8) |
+| 🌤️ 今日天气 | 🌤️ Clear | 🌡️ 35°C |
+| 🔮 今日运势 | 🎉 大吉！今天是充满奇迹的一天！ |
+| 💬 编程名言 | First, solve the problem. Then, write the code. - John Johnson |
 
 ## 🎯 每日寄语
 
-> Debug the world, one line at a time! 🔍
+> 今天也要元气满满地coding哦！💪
 
 ---
 
 <div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=IGCrystal&show_icons=true&theme=radical" alt="GitHub Stats" />
+  <img src="https://github-readme-stats.vercel.app/api?username=Pine-Ln&show_icons=true&theme=radical" alt="GitHub Stats" />
 </div>
 
 <div align="center">
