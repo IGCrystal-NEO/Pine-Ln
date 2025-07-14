@@ -28,7 +28,7 @@ jobs:
           
       - name: ✨ 生成动态 README
         run: |
-          python << 'EOF'
+          python << EOF
 import requests
 import random
 import datetime
