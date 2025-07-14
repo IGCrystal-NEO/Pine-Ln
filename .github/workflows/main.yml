@@ -109,7 +109,7 @@ jobs:
           ending = get_ending()
           
           # 生成 README 内容
-          content = f"""# 🌸 动态 README 展示
+          content = f"""# 🌸 路很长，梦还在
           
           <div align="center">
           
