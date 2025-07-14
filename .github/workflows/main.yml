@@ -2,86 +2,86 @@ name: '🌸 动态README更新工作流 🌸'
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）
-  workflow_dispatch:
+    - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）喵♡～
+  workflow_dispatch:     # 手动触发喵♡～
   push:
     branches:
-      - main
+      - main            # 仅对 main 分支生效喵♡～
 
 jobs:
   update-readme:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest喵♡～
 
     steps:
       - name: 🔄 检出代码
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4喵♡～
 
       - name: 🐍 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.9'喵♡～
 
       - name: 📦 安装依赖
         run: |
-          pip install requests pytz
+          pip install requests pytz喵♡～
 
       - name: ✨ 生成动态 README
         run: |
           python << 'EOF'
-          import requests
-          import random
-          import datetime
-          import pytz
+import requests
+import random
+import datetime
+import pytz
 
-          tz = pytz.timezone('Asia/Shanghai')
-          now = datetime.datetime.now(tz)
+# 时区 & 时间喵♡～
+tz = pytz.timezone('Asia/Shanghai')
+now = datetime.datetime.now(tz)
 
-          def get_weather():
-              try:
-                  url = "http://wthrcdn.etouch.cn/weather_mini?city=重庆"
-                  r = requests.get(url, timeout=10)
-                  if r.status_code == 200:
-                      d = r.json()
-                      if d.get('status') == 1000:
-                          f = d['data']['forecast'][0]
-                          return f"🌤️ {f['type']} | 🌡️ {f['low']} ~ {f['high']}"
-              except Exception as e:
-                  print(f"天气获取异常: {e}")
-              return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+# 获取天气（使用 wttr.in）喵♡～
+def get_weather():
+    try:
+        resp = requests.get("https://wttr.in/重庆?format=%C+%t", timeout=10)
+        if resp.status_code == 200:
+            return resp.text.strip()
+    except Exception as e:
+        print(f"天气获取异常: {e}")
+    return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
 
-          def get_fortune():
-              items = [
-                  "🎉 大吉！今天是充满奇迹的一天！",
-                  "✨ 中吉！好事即将发生~",
-                  "🌟 小吉！保持微笑，幸运会眷顾你",
-                  "💫 吉！今天适合学习新技能",
-                  "🍀 末吉！平稳度过，小心谨慎",
-                  "🌸 平！保持平常心，一切都会好的",
-              ]
-              return random.choice(items)
+# 获取运势喵♡～
+def get_fortune():
+    items = [
+        "🎉 大吉！今天是充满奇迹的一天！",
+        "✨ 中吉！好事即将发生~",
+        "🌟 小吉！保持微笑，幸运会眷顾你",
+        "💫 吉！今天适合学习新技能",
+        "🍀 末吉！平稳度过，小心谨慎",
+        "🌸 平！保持平常心，一切都会好的",
+    ]
+    return random.choice(items)
 
-          weather = get_weather()
-          fortune = get_fortune()
-          ending = random.choice([
-              "今天也要元气满满地coding哦！",
-              "愿你的代码永远没有bug~",
-              "记得多喝水，多休息~",
-          ])
+weather = get_weather()
+fortune = get_fortune()
+ending = random.choice([
+    "今天也要元气满满地coding哦！",
+    "愿你的代码永远没有bug~",
+    "记得多喝水，多休息~",
+])
 
-          content = f"""# 自动更新 README
+# 生成 README 内容喵♡～
+content = f"""# 自动更新 README
 
-          更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
+更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
 
-          **今日天气：** {weather}  
-          **今日运势：** {fortune}  
-          **寄语：** {ending}
-          """
+**今日天气：** {weather}
+**今日运势：** {fortune}
+**寄语：** {ending}
+"""
 
-          with open('README.md', 'w', encoding='utf-8') as f:
-              f.write(content)
+with open('README.md', 'w', encoding='utf-8') as f:
+    f.write(content)
 
-          print("✅ README.md 更新完成！")
-          EOF
+print("✅ README.md 更新完成！")
+EOF喵♡～
 
       - name: 📝 提交更改
         run: |
@@ -91,4 +91,4 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "🌸 自动更新 README - $(date '+%Y-%m-%d %H:%M:%S')"
             git push
-          fi
+          fi喵♡～
