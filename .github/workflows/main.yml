@@ -2,28 +2,28 @@ name: '🌸 动态README更新工作流 🌸'
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）喵♡～
-  workflow_dispatch:     # 手动触发喵♡～
+    - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）
+  workflow_dispatch:
   push:
     branches:
-      - main            # 仅对 main 分支生效喵♡～
+      - main
 
 jobs:
   update-readme:
-    runs-on: ubuntu-latest喵♡～
+    runs-on: ubuntu-latest
 
     steps:
       - name: 🔄 检出代码
-        uses: actions/checkout@v4喵♡～
+        uses: actions/checkout@v4
 
       - name: 🐍 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'喵♡～
+          python-version: '3.9'
 
       - name: 📦 安装依赖
         run: |
-          pip install requests pytz喵♡～
+          pip install requests pytz
 
       - name: ✨ 生成动态 README
         run: |
@@ -33,11 +33,11 @@ import random
 import datetime
 import pytz
 
-# 时区 & 时间喵♡～
+# 时区 & 时间
 tz = pytz.timezone('Asia/Shanghai')
 now = datetime.datetime.now(tz)
 
-# 获取天气（使用 wttr.in）喵♡～
+# 获取天气（使用 wttr.in）
 def get_weather():
     try:
         resp = requests.get("https://wttr.in/重庆?format=%C+%t", timeout=10)
@@ -47,7 +47,7 @@ def get_weather():
         print(f"天气获取异常: {e}")
     return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
 
-# 获取运势喵♡～
+# 获取运势
 def get_fortune():
     items = [
         "🎉 大吉！今天是充满奇迹的一天！",
@@ -67,7 +67,7 @@ ending = random.choice([
     "记得多喝水，多休息~",
 ])
 
-# 生成 README 内容喵♡～
+# 生成 README 内容
 content = f"""# 自动更新 README
 
 更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
@@ -81,7 +81,7 @@ with open('README.md', 'w', encoding='utf-8') as f:
     f.write(content)
 
 print("✅ README.md 更新完成！")
-EOF喵♡～
+EOF
 
       - name: 📝 提交更改
         run: |
@@ -91,4 +91,4 @@ EOF喵♡～
           if ! git diff --cached --quiet; then
             git commit -m "🌸 自动更新 README - $(date '+%Y-%m-%d %H:%M:%S')"
             git push
-          fi喵♡～
+          fi
