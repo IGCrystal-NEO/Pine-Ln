@@ -1,5 +1,4 @@
 name: '🌸 动态README更新工作流 🌸'
-
 on:
   schedule:
     - cron: '0 0 * * *'   # 每天 UTC 00:00 执行（北京时间 08:00）
@@ -7,24 +6,26 @@ on:
   push:
     branches:
       - main
-
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write  # 明确权限
     steps:
       - name: 🔄 检出代码
         uses: actions/checkout@v4
-
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: 🐍 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-
+          python-version: '3.11'  # 使用更新的Python版本
+          
       - name: 📦 安装依赖
         run: |
           pip install requests pytz
-
+          
       - name: ✨ 生成动态 README
         run: |
           python << 'EOF'
@@ -32,6 +33,8 @@ import requests
 import random
 import datetime
 import pytz
+import json
+import os
 
 # 时区 & 时间
 tz = pytz.timezone('Asia/Shanghai')
@@ -40,47 +43,112 @@ now = datetime.datetime.now(tz)
 # 获取天气（使用 wttr.in）
 def get_weather():
     try:
-        resp = requests.get("https://wttr.in/重庆?format=%C+%t", timeout=10)
+        # 获取更详细的天气信息
+        resp = requests.get("https://wttr.in/重庆?format=j1", timeout=10)
         if resp.status_code == 200:
-            return resp.text.strip()
+            data = resp.json()
+            current = data['current_condition'][0]
+            temp = current['temp_C']
+            desc = current['weatherDesc'][0]['value']
+            return f"🌤️ {desc} | 🌡️ {temp}°C"
     except Exception as e:
         print(f"天气获取异常: {e}")
+        # 备用简单格式
+        try:
+            resp = requests.get("https://wttr.in/重庆?format=%C+%t", timeout=5)
+            if resp.status_code == 200:
+                return resp.text.strip()
+        except:
+            pass
     return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
 
 # 获取运势
 def get_fortune():
-    items = [
+    fortunes = [
         "🎉 大吉！今天是充满奇迹的一天！",
         "✨ 中吉！好事即将发生~",
         "🌟 小吉！保持微笑，幸运会眷顾你",
         "💫 吉！今天适合学习新技能",
         "🍀 末吉！平稳度过，小心谨慎",
         "🌸 平！保持平常心，一切都会好的",
+        "🔥 超吉！今天的你就是最亮的星！",
+        "🌈 吉祥！彩虹总在风雨后",
+        "🎯 中吉！目标明确，必定成功",
+        "🌙 小吉！温柔的力量将伴随你"
     ]
-    return random.choice(items)
+    return random.choice(fortunes)
 
+# 获取编程名言
+def get_coding_quote():
+    quotes = [
+        "\"Code is like humor. When you have to explain it, it's bad.\" - Cory House",
+        "\"First, solve the problem. Then, write the code.\" - John Johnson",
+        "\"Experience is the name everyone gives to their mistakes.\" - Oscar Wilde",
+        "\"In order to be irreplaceable, one must always be different.\" - Coco Chanel",
+        "\"Java is to JavaScript what car is to Carpet.\" - Chris Heilmann",
+        "\"The best error message is the one that never shows up.\" - Thomas Fuchs"
+    ]
+    return random.choice(quotes)
+
+# 获取结语
+def get_ending():
+    endings = [
+        "今天也要元气满满地coding哦！💪",
+        "愿你的代码永远没有bug~ 🐛",
+        "记得多喝水，多休息~ 💧",
+        "Keep coding, keep growing! 🌱",
+        "Debug the world, one line at a time! 🔍",
+        "让我们一起让世界变得更美好！ 🌍"
+    ]
+    return random.choice(endings)
+
+# 获取动态内容
 weather = get_weather()
 fortune = get_fortune()
-ending = random.choice([
-    "今天也要元气满满地coding哦！",
-    "愿你的代码永远没有bug~",
-    "记得多喝水，多休息~",
-])
+quote = get_coding_quote()
+ending = get_ending()
 
 # 生成 README 内容
-content = f"""# 自动更新 README
+content = f"""# 🌸 动态 README 展示
 
-更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
+<div align="center">
 
-**今日天气：** {weather}
-**今日运势：** {fortune}
-**寄语：** {ending}
+![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=FF69B4&center=true&vCenter=true&width=435&lines=Welcome+to+my+GitHub!;Always+learning+new+things;Love+to+share+knowledge)
+
+</div>
+
+## 📊 今日信息
+
+| 项目 | 内容 |
+|------|------|
+| 📅 更新时间 | {now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8) |
+| 🌤️ 今日天气 | {weather} |
+| 🔮 今日运势 | {fortune} |
+| 💬 编程名言 | {quote} |
+
+## 🎯 每日寄语
+
+> {ending}
+
+---
+
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=IGCrystal&show_icons=true&theme=radical" alt="GitHub Stats" />
+</div>
+
+<div align="center">
+  <i>✨ 这个 README 通过 GitHub Actions 自动更新 ✨</i>
+</div>
 """
 
+# 写入文件
 with open('README.md', 'w', encoding='utf-8') as f:
     f.write(content)
 
 print("✅ README.md 更新完成！")
+print(f"📊 天气: {weather}")
+print(f"🔮 运势: {fortune}")
+print(f"💬 名言: {quote}")
 EOF
 
       - name: 📝 提交更改
@@ -91,4 +159,12 @@ EOF
           if ! git diff --cached --quiet; then
             git commit -m "🌸 自动更新 README - $(date '+%Y-%m-%d %H:%M:%S')"
             git push
+          else
+            echo "📝 README 内容无变化，跳过提交"
           fi
+
+      - name: 🔔 输出结果
+        if: always()
+        run: |
+          echo "🎉 工作流执行完成！"
+          echo "⏰ 执行时间: $(date '+%Y-%m-%d %H:%M:%S')"
