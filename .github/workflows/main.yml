@@ -28,60 +28,60 @@ jobs:
       - name: ✨ 生成动态 README
         run: |
           python << 'EOF'
-import requests
-import random
-import datetime
-import pytz
+          import requests
+          import random
+          import datetime
+          import pytz
 
-tz = pytz.timezone('Asia/Shanghai')
-now = datetime.datetime.now(tz)
+          tz = pytz.timezone('Asia/Shanghai')
+          now = datetime.datetime.now(tz)
 
-def get_weather():
-    try:
-        url = "http://wthrcdn.etouch.cn/weather_mini?city=重庆"
-        r = requests.get(url, timeout=10)
-        if r.status_code == 200:
-            d = r.json()
-            if d.get('status') == 1000:
-                f = d['data']['forecast'][0]
-                return f"🌤️ {f['type']} | 🌡️ {f['low']} ~ {f['high']}"
-    except Exception as e:
-        print(f"天气获取异常: {e}")
-    return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
+          def get_weather():
+              try:
+                  url = "http://wthrcdn.etouch.cn/weather_mini?city=重庆"
+                  r = requests.get(url, timeout=10)
+                  if r.status_code == 200:
+                      d = r.json()
+                      if d.get('status') == 1000:
+                          f = d['data']['forecast'][0]
+                          return f"🌤️ {f['type']} | 🌡️ {f['low']} ~ {f['high']}"
+              except Exception as e:
+                  print(f"天气获取异常: {e}")
+              return "🌤️ 晴朗 | 🌡️ 20°C ~ 25°C"
 
-def get_fortune():
-    items = [
-        "🎉 大吉！今天是充满奇迹的一天！",
-        "✨ 中吉！好事即将发生~",
-        "🌟 小吉！保持微笑，幸运会眷顾你",
-        "💫 吉！今天适合学习新技能",
-        "🍀 末吉！平稳度过，小心谨慎",
-        "🌸 平！保持平常心，一切都会好的",
-    ]
-    return random.choice(items)
+          def get_fortune():
+              items = [
+                  "🎉 大吉！今天是充满奇迹的一天！",
+                  "✨ 中吉！好事即将发生~",
+                  "🌟 小吉！保持微笑，幸运会眷顾你",
+                  "💫 吉！今天适合学习新技能",
+                  "🍀 末吉！平稳度过，小心谨慎",
+                  "🌸 平！保持平常心，一切都会好的",
+              ]
+              return random.choice(items)
 
-weather = get_weather()
-fortune = get_fortune()
-ending = random.choice([
-    "今天也要元气满满地coding哦！",
-    "愿你的代码永远没有bug~",
-    "记得多喝水，多休息~",
-])
+          weather = get_weather()
+          fortune = get_fortune()
+          ending = random.choice([
+              "今天也要元气满满地coding哦！",
+              "愿你的代码永远没有bug~",
+              "记得多喝水，多休息~",
+          ])
 
-content = f\"\"\"# 自动更新 README
+          content = f"""# 自动更新 README
 
-更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
+          更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')} (UTC+8)
 
-**今日天气：** {weather}  
-**今日运势：** {fortune}  
-**寄语：** {ending}
-\"\"\"
+          **今日天气：** {weather}  
+          **今日运势：** {fortune}  
+          **寄语：** {ending}
+          """
 
-with open('README.md', 'w', encoding='utf-8') as f:
-    f.write(content)
+          with open('README.md', 'w', encoding='utf-8') as f:
+              f.write(content)
 
-print("✅ README.md 更新完成！")
-EOF
+          print("✅ README.md 更新完成！")
+          EOF
 
       - name: 📝 提交更改
         run: |
