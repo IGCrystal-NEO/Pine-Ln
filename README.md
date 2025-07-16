@@ -10,14 +10,14 @@
 
 | 项目 | 内容 |
 |------|------|
-| 📅 更新时间 | 2025-07-17 04:00:12 (UTC+8) |
-| 🌤️ 今日天气 | 🌤️ 晴朗 | 🌡️ 20°C ~ 25°C |
-| 🔮 今日运势 | 💫 吉！今天适合学习新技能 |
-| 💬 编程名言 | Java is to JavaScript what car is to Carpet. - Chris Heilmann |
+| 📅 更新时间 | 2025-07-17 04:00:45 (UTC+8) |
+| 🌤️ 今日天气 | 🌤️ Clear | 🌡️ 31°C |
+| 🔮 今日运势 | 🌈 吉祥！彩虹总在风雨后 |
+| 💬 编程名言 | Experience is the name everyone gives to their mistakes. - Oscar Wilde |
 
 ## 🎯 每日寄语
 
-> Debug the world, one line at a time! 🔍
+> 今天也要元气满满地coding哦！💪
 
 ---
 
