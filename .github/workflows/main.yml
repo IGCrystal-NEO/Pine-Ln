@@ -154,8 +154,8 @@ jobs:
 
       - name: 📝 提交更改
         run: |
-          git config user.email "IGCrystal@wenturc.com"
-          git config user.name "IGCrystal"
+          git config user.email "cacheigcrystal@gmail.com"
+          git config user.name "IGCrystal-Ghost"
           git add README.md
           if ! git diff --cached --quiet; then
             git commit -m "🌸 自动更新 README - $(date '+%Y-%m-%d %H:%M:%S')"
